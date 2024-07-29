@@ -1,10 +1,28 @@
 use std::path::PathBuf;
+use clap::{Command, Arg};
 use walkdir::WalkDir;
 use image::{GenericImageView, imageops::FilterType};
 use rfd::FileDialog;
 use oxipng::{optimize, Options, InFile, OutFile};
 
 fn main() {
+    // Define command-line arguments
+    let matches = Command::new("Image Downscaler")
+        .version("1.0")
+        .author("Your Name <your.email@example.com>")
+        .about("Downscales and optimizes @2x images")
+        .arg(
+            Arg::new("preserve")
+                .short('p')
+                .long("preserve")
+                .takes_value(false)
+                .help("Preserve existing downscaled images"),
+        )
+        .get_matches();
+
+    // Determine if we should preserve existing downscaled images
+    let preserve = matches.is_present("preserve");
+
     // Open a file explorer window to select the directory
     let dir_to_process = FileDialog::new()
         .set_directory(".")
@@ -49,15 +67,20 @@ fn main() {
                     let mut new_path = PathBuf::from(path.parent().unwrap());
                     new_path.push(new_filename);
 
-                    // Save the downscaled image to the new path
-                    if let Err(e) = scaled_img.save(&new_path) {
-                        eprintln!("Failed to save image {:?}: {}", new_path, e);
+                    // Check if the downscaled image already exists
+                    if new_path.exists() && preserve {
+                        println!("Preserving existing image: {:?}", new_path);
                     } else {
-                        // Optimize the new image file using oxipng
-                        if let Err(e) = optimize(&InFile::Path(new_path.clone()), &OutFile::Path(None), &options) {
-                            eprintln!("Failed to optimize downscaled image {:?}: {}", new_path, e);
+                        // Save the downscaled image to the new path
+                        if let Err(e) = scaled_img.save(&new_path) {
+                            eprintln!("Failed to save image {:?}: {}", new_path, e);
                         } else {
-                            println!("Optimized downscaled image saved at {:?}", new_path);
+                            // Optimize the new image file using oxipng
+                            if let Err(e) = optimize(&InFile::Path(new_path.clone()), &OutFile::Path(None), &options) {
+                                eprintln!("Failed to optimize downscaled image {:?}: {}", new_path, e);
+                            } else {
+                                println!("Optimized downscaled image saved at {:?}", new_path);
+                            }
                         }
                     }
                 }

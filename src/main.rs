@@ -7,9 +7,9 @@ use oxipng::{optimize, Options, InFile, OutFile};
 
 fn main() {
     // Define command-line arguments
-    let matches = Command::new("Image Downscaler")
+    let matches = Command::new("optimized-hd2sd")
         .version("1.0")
-        .author("Your Name <your.email@example.com>")
+        .author("breadles5")
         .about("Downscales and optimizes @2x images")
         .arg(
             Arg::new("preserve")

@@ -1,24 +1,21 @@
-use std::env;
-use std::fs;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 use image::{GenericImageView, ImageBuffer, DynamicImage, imageops::FilterType};
+use rfd::FileDialog;
 
 fn main() {
-    // Get the directory to process from the command line arguments
-    let args: Vec<String> = env::args().collect();
-    if args.len() != 2 {
-        eprintln!("Usage: {} <directory>", args[0]);
-        std::process::exit(1);
-    }
+    // Open a file explorer window to select the directory
+    let dir_to_process = FileDialog::new()
+        .set_directory(".")
+        .pick_folder();
 
-    let dir_to_process = &args[1];
-    let dir_path = Path::new(dir_to_process);
-
-    if !dir_path.is_dir() {
-        eprintln!("Provided path is not a directory: {}", dir_to_process);
-        std::process::exit(1);
-    }
+    let dir_path = match dir_to_process {
+        Some(path) => path,
+        None => {
+            eprintln!("No directory selected.");
+            std::process::exit(1);
+        }
+    };
 
     // Traverse the directory and subdirectories
     for entry in WalkDir::new(dir_path)

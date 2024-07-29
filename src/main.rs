@@ -1,6 +1,6 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use walkdir::WalkDir;
-use image::{GenericImageView, ImageBuffer, DynamicImage, imageops::FilterType};
+use image::{GenericImageView, imageops::FilterType};
 use rfd::FileDialog;
 
 fn main() {

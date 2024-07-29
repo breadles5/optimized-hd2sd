@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use walkdir::WalkDir;
 use image::{GenericImageView, imageops::FilterType};
 use rfd::FileDialog;
+use oxipng::{optimize, Options, InFile, OutFile};
 
 fn main() {
     // Open a file explorer window to select the directory
@@ -43,6 +44,14 @@ fn main() {
                     // Save the downscaled image to the new path
                     if let Err(e) = scaled_img.save(&new_path) {
                         eprintln!("Failed to save image {:?}: {}", new_path, e);
+                    } else {
+                        // Optimize the new image file using oxipng
+                        let options = Options::from_preset(3); // You can adjust the preset level
+                        if let Err(e) = optimize(&InFile::Path(new_path.clone()), &OutFile::Path(Some(new_path.clone())), &options) {
+                            eprintln!("Failed to optimize image {:?}: {}", new_path, e);
+                        } else {
+                            println!("Optimized image saved at {:?}", new_path);
+                        }
                     }
                 }
             },

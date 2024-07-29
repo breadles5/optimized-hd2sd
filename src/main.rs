@@ -28,6 +28,14 @@ fn main() {
         let path = entry.path();
         println!("Processing file: {:?}", path);
 
+        // Optimize the original image file using oxipng
+        let options = Options::from_preset(3); // You can adjust the preset level
+        if let Err(e) = optimize(&InFile::Path(path.to_path_buf()), &OutFile::Path(None), &options) {
+            eprintln!("Failed to optimize original image {:?}: {}", path, e);
+        } else {
+            println!("Optimized original image at {:?}", path);
+        }
+
         // Open the image file
         match image::open(&path) {
             Ok(img) => {
@@ -46,11 +54,10 @@ fn main() {
                         eprintln!("Failed to save image {:?}: {}", new_path, e);
                     } else {
                         // Optimize the new image file using oxipng
-                        let options = Options::from_preset(3); // You can adjust the preset level
-                        if let Err(e) = optimize(&InFile::Path(new_path.clone()), &OutFile::Path(Some(new_path.clone())), &options) {
-                            eprintln!("Failed to optimize image {:?}: {}", new_path, e);
+                        if let Err(e) = optimize(&InFile::Path(new_path.clone()), &OutFile::Path(None), &options) {
+                            eprintln!("Failed to optimize downscaled image {:?}: {}", new_path, e);
                         } else {
-                            println!("Optimized image saved at {:?}", new_path);
+                            println!("Optimized downscaled image saved at {:?}", new_path);
                         }
                     }
                 }

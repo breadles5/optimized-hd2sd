@@ -16,6 +16,6 @@ A Rust application designed to process osu skin HD textures and create optimized
 3. The application will process all `@2x` images in the selected directory and its subdirectories.
 
 ### Command Line Arguments
-- `-b, --batch-size <SIZE>`: Set the batch size for processing images (default: 4)
+- `-b, --batch-size <SIZE>`: Set the batch size for processing images (default:20)
 - `-p, --preserve`: Preserve existing SD images
 - `-h, --help`: Display help information
